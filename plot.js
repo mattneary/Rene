@@ -27,19 +27,21 @@ var ƒ = (function() {
 		initPlane: function(elem) {
 			elem = elem || document.getElementsByTagName('canvas')[0];
 			elem.width = elem.width;
-			if (elem && elem.getContext && (context = elem.getContext('2d'))) {						    				
-				context.beginPath();				
-				//Axis Style
-				context.strokeStyle = '#000';
-				context.lineWidth   = 1;				
-				//y-axis
-				context.moveTo( axies.y, 0 );
-				context.lineTo( axies.y, elem.height );				
-				//x-axis
-				context.moveTo( 0, axies.x );
-				context.lineTo( elem.width, axies.x );				
-				context.stroke();
-				context.closePath();
+			if (elem.getContext && (context = elem.getContext('2d'))) {		
+				with( context ) {
+					beginPath();				
+					//Axis Style
+					strokeStyle = '#000';
+					lineWidth   = 1;				
+					//y-axis
+					moveTo( axies.y, 0 );
+					lineTo( axies.y, elem.height );				
+					//x-axis
+					moveTo( 0, axies.x );
+					lineTo( elem.width, axies.x );				
+					stroke();
+					closePath();
+				}				
 			}
 		},
 		graph: function( f, elem, scaleWindow, prec) {
@@ -69,7 +71,7 @@ var ƒ = (function() {
 				y: (elem.width*(0-scaleWindow[0])/(scaleWindow[1]-scaleWindow[0])),
 				x: (elem.height*(0-scaleWindow[2])/(scaleWindow[3]-scaleWindow[2]))
 			};
-			if (elem && elem.getContext && (context = elem.getContext('2d'))) {	
+			if (elem.getContext && (context = elem.getContext('2d'))) {	
 				ƒ.initPlane(elem);									
 				context.beginPath();				
 				//Plot style
