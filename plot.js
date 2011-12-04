@@ -2,20 +2,17 @@ var ƒ = (function() {
 
 	//Local version of ƒ
 	var ƒ = function(str) {		
+		var	e = Math.exp(1),
+			sin = Math.sin,
+			cos = Math.cos,
+			tan = Math.tan,
+			pi = 3.14159,
+			sqrt = Math.sqrt,
+			parse = str.replace(/([0-9])([(][^)]+[)]|[a-zA-Z])/g, "$1*$2")	//Change coeff to multiplication
+				   .replace(/([(][^)]+[)]|[a-zA-Z0-9]+)\^([(][^)]+[)]|\S+)(\s|$)/g, "Math.pow($1, $2)$3");	//Exponential Function
+	
 		//Once ƒ is constructed with a string, ƒ becomes a function of a value -- with the same prototype
-		var ƒ = function(x) {
-			var	e = Math.exp(1),
-				sin = Math.sin,
-				cos = Math.cos,
-				tan = Math.tan,
-				pi = 3.14159,
-				sqrt = Math.sqrt,
-				parse = str.replace(/([0-9])([(][^)]+[)]|[a-zA-Z])/g, "$1*$2")	//Change coeff to multiplication
-					   .replace(/([(][^)]+[)]|[a-zA-Z0-9]+)\^([(][^)]+[)]|\S+)(\s|$)/g, "Math.pow($1, $2)$3")	//Exponential Function
-					   .replace(/x/g, x);		//Insert x
-			
-			return isNaN(x) ? parse : { f: function(window, document) { return eval(parse); } }.f();
-		};
+		var ƒ = Function("x", "return isNaN(x)?'"+parse+"':"+parse);
 		ƒ.p = ƒ.prototype = window.ƒ.p;
 		//Apply prototype to constructor
 		for( var key in ƒ.p )
