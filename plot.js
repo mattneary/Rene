@@ -90,9 +90,9 @@ var ƒ = (function() {
 						xRange 	 = scaleWindow[1] - scaleWindow[0],
 						yRange	 = scaleWindow[3] - scaleWindow[2];
 					
-				    context.moveTo(axies.y-f(xMin+fraction(i)*xRange)[0]/xRange*elem.width, axies.x-f(xMin+fraction(i)*xRange)[1]/yRange*elem.height); 
+				    context.moveTo(axies.y+f(xMin+fraction(i)*xRange)[0]/xRange*elem.width, axies.x-f(xMin+fraction(i)*xRange)[1]/yRange*elem.height); 
 				    //x,y coordinate
-				    context.lineTo(axies.y-f(xMin+fraction(i+1)*xRange)[0]/xRange*elem.width, axies.x-f(xMin+fraction(i+1)*xRange)[1]/yRange*elem.height);	
+				    context.lineTo(axies.y+f(xMin+fraction(i+1)*xRange)[0]/xRange*elem.width, axies.x-f(xMin+fraction(i+1)*xRange)[1]/yRange*elem.height);	
 				}		   		
 				context.stroke();
 				context.closePath();
