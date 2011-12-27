@@ -1,16 +1,26 @@
 var ƒ = (function() {	
 	//Math globals
-	e = Math.exp(1),
+	factorial = function(x,a) {a=1,x++;while(x-->1)a*=x;return a},
+	rec = function(cb){return function(x) {1/cb(x)}},
+	e 	= Math.exp(1),
+	pi 	= 3.14159,
+	log	= ln = Math.log,
+	exp = Math.exp,
 	sin = Math.sin,
 	cos = Math.cos,
 	tan = Math.tan,
-	pi = 3.14159,
+	csc = rec(sin),
+	sec = rec(cos),
+	cot = rec(tan),
+	acos = Math.acos,
+	asin = Math.asin,
+	atan = Math.atan,
 	sqrt = Math.sqrt;	
 	
 	//Local version of ƒ
 	var ƒ = function(str, xstr, polar) {		
-		var xstr = xstr || "x";
-		var parse = function(str) {
+		var xstr = xstr || "x",
+			parse = function(str) {
 				return str.replace(/([0-9])([(][^)]+[)]|[a-zA-Z])/g, "$1*$2")	//Change coeff to multiplication
 				   .replace(/([(][^)]+[)]|[a-zA-Z0-9]+)\^([(][^)]+[)]|\S+)(\s|$)/g, "Math.pow($1, $2)$3");	//Exponential Function
 			},
@@ -30,9 +40,9 @@ var ƒ = (function() {
 	};
 	ƒ.p = ƒ.prototype = {
 		constructor: ƒ,
-		initPlane: function(e) {
+		initPlane: function(over, e) {
+			var thiz = this;
 			e = e || document.getElementsByTagName('canvas')[0];
-			e.width = e.width;
 			if (e.getContext && (context = e.getContext('2d'))) {		
 				with( context ) {
 					beginPath();				
@@ -49,6 +59,10 @@ var ƒ = (function() {
 					closePath();
 				}				
 			}
+			return thiz;
+		},
+		y: function(x) {
+			return this(x)[1];
 		},
 		graph: function( f, elem, scaleWindow, prec) {
 
@@ -97,6 +111,7 @@ var ƒ = (function() {
 				context.stroke();
 				context.closePath();
 			}
+			return thiz;
 		}
 	};
 	//Apply prototype to constructor
