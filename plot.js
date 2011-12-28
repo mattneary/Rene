@@ -25,13 +25,13 @@ var ƒ = (function(el,globals) {
 		constructor: ƒ,
 		initPlane: function(over, e) {
 			var thiz = this;
-			ƒ("0").graph(0,1),ƒ("x","0").graph(0,1);		
+			ƒ("0").graph(0,1,'#666'),ƒ("x","0").graph(0,1,'#666');		
 			return thiz;
 		},
 		y: function(x) {
 			return this(x)[1];
 		},
-		graph: function( win, ax ) {
+		graph: function( win, ax, color ) {
 			var thiz = this, _f = f, f = thiz;		
 
 			var prec = 1000,
@@ -54,7 +54,7 @@ var ƒ = (function(el,globals) {
 				!ax&&ƒ.initPlane(elem);									
 				context.beginPath();				
 				//Plot style
-				context.strokeStyle = '#f00';
+				context.strokeStyle = color;
 				context.lineWidth   = 3;
 
 				var sum = 0;
