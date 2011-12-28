@@ -26,25 +26,25 @@ Code Breakdown
 
 Basics:
 
-	\_f = (function() {						//IIFE
+	_f = (function() {						//IIFE
 	 var _f = function(str) {				//Constructor
 	  return function(x) {					//Constructed Function
 	   return eval(str.replace(/x/g, x));	//Evaluation based on input
 	  };
 	 }
 	
-	\_f.p = _f.prototype = {				//Declare prototype
-	  constructor: \_f,
+	_f.p = _f.prototype = {				//Declare prototype
+	  constructor: _f,
 	  attr: "value"
 	 }
-	 for( key in \_f.p )						//Extend Instance
-	  \_f[key] = \_f.p[key];
+	 for( key in _f.p )						//Extend Instance
+	  _f[key] = _f.p[key];
 	 return _f;								//Return instance
 	})(); 
 
 Reduces to a tweet:
 
-	\_=function(){\_=function(s){return function(x){return eval(s)}};\_.p=\_.prototype={constructor:\_,var:"x"};for(k in \_.p)_[k]=\_.p[k];return \_}()
+	_=function(){_=function(s){return function(x){return eval(s)}};_.p=_.prototype={constructor:_,var:"x"};for(k in _.p)_[k]=_.p[k];return _}()
 
 	
 
