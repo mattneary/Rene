@@ -85,9 +85,9 @@ var ƒ = (function(el,globals) {
 	with(o) {
 		o.factorial = function(x,a) {a=1,x++;while(x-->1)a*=x;return a},
 		o.rec = function(cb){return function(x) {1/cb(x)}},
-		o.e 	= Math.exp(1),
-		o.pi 	= 3.14159,
-		o.log	= ln = Math.log,
+		o.e   = Math.exp(1),
+		o.pi  = 3.14159,
+		o.log = o.ln = Math.log,
 		o.exp = Math.exp,
 		o.sin = Math.sin,
 		o.cos = Math.cos,
