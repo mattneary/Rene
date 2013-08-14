@@ -6,9 +6,9 @@ var ƒ = _ƒ =  (function() {
 		if( patterns.length == 0 && (str.length == 0 || str.match(/^\s+$/)) ) {
 			return [];
 		} else if( patterns.length ) {
-			if( str.match(new RegExp("^\\s*?"+patterns[0])) ) {
-				var m = str.match(new RegExp("^\s*?"+patterns[0]))[0];
-				return [m].concat(readin(str.replace(m, ''), patterns.slice(1)));
+			if( str.match(new RegExp("^\\s*?\\(?"+patterns[0]+"\\)?")) ) {
+				var ms = str.match(new RegExp("^\\s*?\\(?("+patterns[0]+")\\)?"));
+				return [ms[1]].concat(readin(str.replace(ms[0], ''), patterns.slice(1)));
 			} else {
 				return [];
 			}
@@ -20,8 +20,8 @@ var ƒ = _ƒ =  (function() {
 		if( patterns.length == 0 ) {
 			return str.length == 0 ? true : 2;
 		} else if( patterns.length ) {
-			if( str.match(new RegExp("^\\s*?"+patterns[0])) ) {
-				var m = str.match(new RegExp("^\s*?"+patterns[0]))[0];
+			if( str.match(new RegExp("^\\s*?\\(?"+patterns[0]+"\\)?")) ) {
+				var m = str.match(new RegExp("^\s*?\\(?("+patterns[0]+")\\)?"))[0];
 				return read(str.replace(m, ''), patterns.slice(1));
 			} else {
 				return false;
@@ -48,7 +48,7 @@ var ƒ = _ƒ =  (function() {
 			oo = "^ * / + -".split(' ');
 			
 		if( read(str, [number]) === true ) {
-			return parseFloat(str);
+			return parseFloat(readin(str, [number])[0]);
 		} else if( read(str, [variable]) === true ) {
 			return env[str];
 		} else if( read(str, application) === true ) {
@@ -125,13 +125,13 @@ var ƒ = _ƒ =  (function() {
 			var prec = 1000,
 			    elem = el,
 			    win = [
-					-8,	//xMin
-					8,	//xMax
-					-8,	//yMin
-					8	//yMax
+					-8,	// xMin
+					8,	// xMax
+					-8,	// yMin
+					8	// yMax
 			    ];
 
-			win[3] = [-win[2], (win[2] = -win[3])][0];	//Swap Max/Min to make more intuitive
+			win[3] = [-win[2], (win[2] = -win[3])][0];	// Swap Max/Min to make more intuitive
 
 			axies = {
 				y: (elem.width*(0-win[0])/(win[1]-win[0])),
@@ -141,7 +141,7 @@ var ƒ = _ƒ =  (function() {
 				
 			!ax && ƒ.initPlane(elem);									
 			context.beginPath();				
-			//Plot style
+			// Plot style
 			context.strokeStyle = color;
 			context.lineWidth   = 3;
 

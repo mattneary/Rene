@@ -22,7 +22,7 @@ var assert_equal = function(name, a, b) {
 	if( equal(a, b) ) {
 		console.log("PASSED: "+name);
 	} else {
-		console.log("FAILED: "+name);
+		console.log("FAILED: "+name, a, "≠", b);
 	}
 };
 var section = function(name, under) {
