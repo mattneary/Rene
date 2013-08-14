@@ -1,4 +1,4 @@
-var ƒ = (function(el) {	
+var ƒ = (function() {	
 	g = Math;
 	g.factorial = function(x,a) { a=1,x++; while(x-->1)a*=x; return a; },
     g.rec = function(cb){ return function(x) { return 1/cb(x); }; },
@@ -111,16 +111,16 @@ var ƒ = (function(el) {
 	};
 	ƒ.p = ƒ.prototype = {
 		constructor: ƒ,
-		initPlane: function(over, e) {
+		initPlane: function(el) {
 			var thiz = this;
-			ƒ("0").graph(0,1,'#666');
-			ƒ(["0","x"]).graph(0,1,'#666');		
+			ƒ("0").graph(el, 0, 1, '#666');
+			ƒ(["0","x"]).graph(el, 0, 1, '#666');		
 			return thiz;
 		},
 		y: function(x) {
 			return this(x)[1];
 		},
-		graph: function( win, ax, color ) {
+		graph: function( el, win, ax, color ) {
 			var thiz = this, _f = f, f = thiz;		
 
 			var prec = 1000,
@@ -164,9 +164,9 @@ var ƒ = (function(el) {
 			return thiz;
 		}
 	};
-	//Apply prototype to constructor
+	// Apply prototype to constructor
 	for( var key in ƒ.p ) {
 		ƒ[key] = ƒ.p[key];
 	}
 	return ƒ;
-});
+}());

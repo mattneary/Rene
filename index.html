@@ -8,9 +8,8 @@
 		<canvas id="cvs" width="300" height="300"></canvas>
 		<script charset="utf-8" type="text/javascript" src="plot.js"></script>		
 		<script type="text/javascript">		
-			ƒ = ƒ(document.getElementsByTagName("canvas")[0]);
 			var linear = ƒ("3*x+2");
-			linear.graph();
+			linear.graph(document.getElementsByTagName("canvas")[0]);
 		</script>
 	</body>
 </html>
