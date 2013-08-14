@@ -1,31 +1,120 @@
-var ƒ = (function(el,globals) {	
-	g = globals;			
-	//Local version of ƒ
-	var ƒ = function(str, xstr, polar) {		
-		var xstr = xstr || "x",
-			parse = function(str) {
-				return str.replace(/([0-9])([(][^)]+[)]|[a-zA-Z])/g, "$1*$2")	//Change coeff to multiplication
-				   .replace(/([(][^)]+[)]|[a-zA-Z0-9]+)\^([(][^)]+[)]|\S+)(\s|$)/g, "Math.pow($1, $2)$3");	//Exponential Function
-			},
-			x = parse(xstr),
-			parse = parse(str);
+var ƒ = (function(el) {	
+	g = Math;
+	g.factorial = function(x,a) { a=1,x++; while(x-->1)a*=x; return a; },
+    g.rec = function(cb){ return function(x) { return 1/cb(x); }; },
+    g.e = Math.exp(1),
+    g.pi = 3.14159,
+    g.csc = g.rec(g.sin),
+    g.sec = g.rec(g.cos),
+    g.cot = g.rec(g.tan);
+	    
+	// THE EVALUATOR
+	var readin = function(str, patterns) {
+		if( patterns.length == 0 && (str.length == 0 || str.match(/^\s+$/)) ) {
+			return [];
+		} else if( patterns.length ) {
+			if( str.match(new RegExp("^\\s*?"+patterns[0])) ) {
+				var m = str.match(new RegExp("^\s*?"+patterns[0]))[0];
+				return [m].concat(readin(str.replace(m, ''), patterns.slice(1)));
+			} else {
+				return [];
+			}
+		} else {
+			return [];
+		}
+	};
+	var read = function(str, patterns) {
+		if( patterns.length == 0 ) {
+			return str.length == 0 ? true : 2;
+		} else if( patterns.length ) {
+			if( str.match(new RegExp("^\\s*?"+patterns[0])) ) {
+				var m = str.match(new RegExp("^\s*?"+patterns[0]))[0];
+				return read(str.replace(m, ''), patterns.slice(1));
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	};
+	var or = function(a, b) {
+		return '(('+a+')|('+b+'))';
+	};
+	var all = function() {
+		return [].reduce.call(arguments, function(a, b) {
+			return '('+a+')('+b+')';
+		});
+	};
+	var eval = function(str, env) {
+		var number = "[0-9\\.]+",
+			variable = "[^\s0-9]",
+			atom = or(number, variable),
+			operator = "[\\*\\+-\\/\\^]",
+			application = [atom, operator, atom],
+			rest = ".*";
 			
-		//Once ƒ is constructed with a string, ƒ becomes a function of a value -- with the same prototype
-		if( polar )
-			var ƒ = new Function("x", "with(g) return isNaN(x)?'"+parse+"':[cos("+x+")*"+parse+", sin(x)*"+parse+"]");
-		else
-			var ƒ = new Function("x", "with(g) return isNaN(x)?'"+parse+"':["+x+", "+parse+"]");
+		if( read(str, [number]) === true ) {
+			return parseFloat(str);
+		} else if( read(str, [variable]) === true ) {
+			return env[str];
+		} else if( read(str, application) === true ) {
+			var parse = readin(str, application),
+				parts = parse.map(function(x){return eval(x, env);});
+			return parts[1](parts[0], parts[2]);
+		} else if( read(str, application.concat(operator)) ) {
+			var parse = readin(str, application.concat(operator).concat(rest)),
+				parts = parse.map(function(x){return eval(x, env);});
+			return parts[3](parts[1](parts[0], parts[2]), parts[4]);
+		} else {
+			return null;
+		}
+	};
+	var extend = function(a, b) {
+		var n = {};
+		for(var k in a) {
+			n[k] = a[k];
+		}
+		for(var k in b) {
+			n[k] = b[k];
+		}
+		return n;
+	};
+	var ƒ = function(fns, polar) {		
+		var env = {
+			"+": function(a,b){return a+b},
+			"*": function(a,b){return a*b}
+		};
+		if( typeof fns == 'string' ) {
+			fns = [fns];
+		}		
+		if(polar) {
+			var eqs = fns.map(evalPolar);
+			// ...
+		} else {			
+			if( fns.length == 1 ) {				
+				f = function(x){
+					return [x, eval(fns[0], extend(env, {x:x}))];
+				};
+			} else {				
+				f = function(x) {
+					var eqs = fns.map(function(ex){return eval(ex, extend(env, {x:x}));});
+					return eqs;
+				};
+			}
+		}
+		
 		ƒ.p = ƒ.prototype = window.ƒ.p;
-		//Apply prototype to constructor
-		for( var key in ƒ.p )
-			ƒ[key] = ƒ.p[key];
-		return ƒ;
+		for( var key in ƒ.p ) {
+			f[key] = ƒ.p[key];
+		}
+		return f;
 	};
 	ƒ.p = ƒ.prototype = {
 		constructor: ƒ,
 		initPlane: function(over, e) {
 			var thiz = this;
-			ƒ("0").graph(0,1,'#666'),ƒ("x","0").graph(0,1,'#666');		
+			ƒ("0").graph(0,1,'#666');
+			ƒ(["0","x"]).graph(0,1,'#666');		
 			return thiz;
 		},
 		y: function(x) {
@@ -49,29 +138,29 @@ var ƒ = (function(el,globals) {
 				y: (elem.width*(0-win[0])/(win[1]-win[0])),
 				x: (elem.height*(0-win[2])/(win[3]-win[2]))
 			};
-			var context;
-			if (elem.getContext && (context = elem.getContext('2d'))) {	
-				!ax&&ƒ.initPlane(elem);									
-				context.beginPath();				
-				//Plot style
-				context.strokeStyle = color;
-				context.lineWidth   = 3;
+			var context = elem.getContext('2d');
+				
+			!ax && ƒ.initPlane(elem);									
+			context.beginPath();				
+			//Plot style
+			context.strokeStyle = color;
+			context.lineWidth   = 3;
 
-				var sum = 0;
-				for( var i = axies.y/elem.width * -1 * prec; i < (elem.width-axies.y)/elem.width * prec; i++ ) {
-					var fraction = function(n) { return (n - axies.y/elem.width * -1 * prec)/prec; },
-						xMin	 = win[0],
-						yMin	 = win[2],
-						xRange 	 = win[1] - win[0],
-						yRange	 = win[3] - win[2];
-					
-				    context.moveTo(axies.y+f(xMin+fraction(i)*xRange)[0]/xRange*elem.width, axies.x-f(xMin+fraction(i)*xRange)[1]/yRange*elem.height); 
-				    //x,y coordinate
-				    context.lineTo(axies.y+f(xMin+fraction(i+1)*xRange)[0]/xRange*elem.width, axies.x-f(xMin+fraction(i+1)*xRange)[1]/yRange*elem.height);	
-				}		   		
-				context.stroke();
-				context.closePath();
-			}
+			var sum = 0;
+			for( var i = axies.y/elem.width * -1 * prec; i < (elem.width-axies.y)/elem.width * prec; i++ ) {
+				var fraction = function(n) { return (n - axies.y/elem.width * -1 * prec)/prec; },
+					xMin	 = win[0],
+					yMin	 = win[2],
+					xRange 	 = win[1] - win[0],
+					yRange	 = win[3] - win[2];
+				
+			    context.moveTo(axies.y+f(xMin+fraction(i)*xRange)[0]/xRange*elem.width, axies.x-f(xMin+fraction(i)*xRange)[1]/yRange*elem.height); 
+			    //x,y coordinate
+			    context.lineTo(axies.y+f(xMin+fraction(i+1)*xRange)[0]/xRange*elem.width, axies.x-f(xMin+fraction(i+1)*xRange)[1]/yRange*elem.height);	
+			}		   		
+			context.stroke();
+			context.closePath();
+			
 			return thiz;
 		}
 	};
@@ -80,25 +169,4 @@ var ƒ = (function(el,globals) {
 		ƒ[key] = ƒ.p[key];
 	}
 	return ƒ;
-})(document.getElementsByTagName("canvas")[0],(function() {
-	o = {};
-	with(o) {
-		o.factorial = function(x,a) {a=1,x++;while(x-->1)a*=x;return a},
-		o.rec = function(cb){return function(x) {1/cb(x)}},
-		o.e   = Math.exp(1),
-		o.pi  = 3.14159,
-		o.log = o.ln = Math.log,
-		o.exp = Math.exp,
-		o.sin = Math.sin,
-		o.cos = Math.cos,
-		o.tan = Math.tan,
-		o.csc = rec(sin),
-		o.sec = rec(cos),
-		o.cot = rec(tan),
-		o.acos = Math.acos,
-		o.asin = Math.asin,
-		o.atan = Math.atan,
-		o.sqrt = Math.sqrt;
-	}; 
-	return o;
-})());
+});
