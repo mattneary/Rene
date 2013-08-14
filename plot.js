@@ -1,14 +1,5 @@
 var ƒ = _ƒ =  (function() {
 	var root = this;	
-	
-	g = Math;
-	g.factorial = function(x,a) { a=1,x++; while(x-->1)a*=x; return a; },
-    g.rec = function(cb){ return function(x) { return 1/cb(x); }; },
-    g.e = Math.exp(1),
-    g.pi = 3.14159,
-    g.csc = g.rec(g.sin),
-    g.sec = g.rec(g.cos),
-    g.cot = g.rec(g.tan);
 	    
 	// THE EVALUATOR
 	var readin = function(str, patterns) {
@@ -53,7 +44,8 @@ var ƒ = _ƒ =  (function() {
 			atom = or(number, variable),
 			operator = "[\\*\\+-\\/\\^]",
 			application = [atom, operator, atom],
-			rest = ".*";
+			rest = ".*",
+			oo = "^ * / + -".split(' ');
 			
 		if( read(str, [number]) === true ) {
 			return parseFloat(str);
@@ -66,7 +58,11 @@ var ƒ = _ƒ =  (function() {
 		} else if( read(str, application.concat(operator)) ) {
 			var parse = readin(str, application.concat(operator).concat(rest)),
 				parts = parse.map(function(x){return eval(x, env);});
-			return parts[3](parts[1](parts[0], parts[2]), parts[4]);
+			if( oo.indexOf(parse[3]) > oo.indexOf(parse[1]) ) {
+				return parts[3](parts[1](parts[0], parts[2]), parts[4]);
+			} else {
+				return parts[1](parts[0], parts[3](parts[2], parts[4]));
+			}
 		} else {
 			return null;
 		}
@@ -84,7 +80,8 @@ var ƒ = _ƒ =  (function() {
 	var ƒ = function(fns, polar) {		
 		var env = {
 			"+": function(a,b){return a+b},
-			"*": function(a,b){return a*b}
+			"*": function(a,b){return a*b},
+			"^": function(a,b){return Math.pow(a, b);}
 		};
 		if( typeof fns == 'string' ) {
 			fns = [fns];
