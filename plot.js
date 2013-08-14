@@ -1,4 +1,6 @@
-var ƒ = (function() {	
+var ƒ = _ƒ =  (function() {
+	var root = this;	
+	
 	g = Math;
 	g.factorial = function(x,a) { a=1,x++; while(x-->1)a*=x; return a; },
     g.rec = function(cb){ return function(x) { return 1/cb(x); }; },
@@ -103,7 +105,7 @@ var ƒ = (function() {
 			}
 		}
 		
-		ƒ.p = ƒ.prototype = window.ƒ.p;
+		ƒ.p = ƒ.prototype = _ƒ;
 		for( var key in ƒ.p ) {
 			f[key] = ƒ.p[key];
 		}
@@ -170,3 +172,7 @@ var ƒ = (function() {
 	}
 	return ƒ;
 }());
+
+if( module ) {
+	module.exports = ƒ;
+}
