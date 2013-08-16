@@ -2,70 +2,88 @@ var ƒ = _ƒ =  (function() {
 	var root = this;	
 	    
 	// THE EVALUATOR
-	var readin = function(str, patterns) {
-		if( patterns.length == 0 && (str.length == 0 || str.match(/^\s+$/)) ) {
-			return [];
-		} else if( patterns.length ) {
-			if( str.match(new RegExp("^\\s*?\\(?"+patterns[0]+"\\)?")) ) {
-				var ms = str.match(new RegExp("^\\s*?\\(?("+patterns[0]+")\\)?"));
-				return [ms[1]].concat(readin(str.replace(ms[0], ''), patterns.slice(1)));
+	var number = "[0-9]",
+		operator = "[*+-\\/^]",
+		variable = "[a-zA-Z_]";
+	var identity = function(x){return x;};
+	var parseParen = function(str) {
+		var nested = 0,
+			paren = "",
+			rest = "",
+			matched = false;
+		for( var i = 0; i < str.length; i++ ) {
+			var read = str[i];
+			if( read == '(' && !matched ) {
+				nested++;
+				if( nested == 1 ) {
+					paren = "";
+				} else {
+					paren += read;
+				}
+			} else if( read == ')' && !matched ) {
+				nested--;
+				if( nested == 0 ) {
+					matched = true; 
+				} else {
+					paren += read;
+				}
+			} else if(matched) {
+				rest += read;
 			} else {
-				return [];
+				paren += read;
 			}
+		}
+		if( rest ) {
+			var parsed = parse('_'+rest);						
+			parsed.splice(1, 1, parse(paren));		
+			return parsed;
 		} else {
-			return [];
+			return parse(paren);
 		}
 	};
-	var read = function(str, patterns) {
-		if( patterns.length == 0 ) {
-			return str.length == 0 ? true : 2;
-		} else if( patterns.length ) {
-			if( str.match(new RegExp("^\\s*?\\(?"+patterns[0]+"\\)?")) ) {
-				var m = str.match(new RegExp("^\s*?\\(?("+patterns[0]+")\\)?"))[0];
-				return read(str.replace(m, ''), patterns.slice(1));
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
+	var parseOp = function(str) {
+		var first = str.split(/[*+-\/^]/)[0],
+			op = str.substr(first.length, 1),
+			rest = str.substr(first.length + 1);
+		return [op, parse(first), parse(rest)];
+	};
+	var just = function(pattern) {
+		return new RegExp("^"+pattern+"$");
+	};
+	var leading = function(pattern) {
+		return new RegExp("^"+pattern);
 	};
 	var or = function(a, b) {
-		return '(('+a+')|('+b+'))';
+		return "("+a+"|"+b+")"
 	};
-	var all = function() {
-		return [].reduce.call(arguments, function(a, b) {
-			return '('+a+')('+b+')';
-		});
-	};
-	var eval = function(str, env) {
-		var number = "[0-9\\.]+",
-			variable = "[^\s0-9]",
-			atom = or(number, variable),
-			operator = "[\\*\\+-\\/\\^]",
-			application = [atom, operator, atom],
-			rest = ".*",
-			oo = "^ * / + -".split(' ');
-			
-		if( read(str, [number]) === true ) {
-			return parseFloat(readin(str, [number])[0]);
-		} else if( read(str, [variable]) === true ) {
-			return env[str];
-		} else if( read(str, application) === true ) {
-			var parse = readin(str, application),
-				parts = parse.map(function(x){return eval(x, env);});
-			return parts[1](parts[0], parts[2]);
-		} else if( read(str, application.concat(operator)) ) {
-			var parse = readin(str, application.concat(operator).concat(rest)),
-				parts = parse.map(function(x){return eval(x, env);});
-			if( oo.indexOf(parse[3]) > oo.indexOf(parse[1]) ) {
-				return parts[3](parts[1](parts[0], parts[2]), parts[4]);
-			} else {
-				return parts[1](parts[0], parts[3](parts[2], parts[4]));
+	var parse = function(str) {		
+		var exprs = [
+			[just(number), parseInt],
+			[leading(or(number, variable)+operator), parseOp],
+			[/^[(]/, parseParen],
+			[/^/, identity]
+		];
+		var matched = false,
+			parse;
+		exprs.forEach(function(expr) {
+			if( expr[0].test(str) && !matched ) {
+				matched = true;
+				parse = expr[1](str);
 			}
-		} else {
-			return null;
+		});
+		return matched && parse;
+	};
+	var eval = function(expr, env) {
+		if( typeof expr == "string" ) {
+			return env[expr];
+		} else if( typeof expr == 'number' ) {
+			return expr;
+		} else if( just(operator).test(expr[0]) ) {
+			return env[expr[0]](eval(expr[1], env), eval(expr[2], env));
 		}
+	};
+	var evalparse = function(expr, env) {
+		return eval(parse(expr), env);
 	};
 	var extend = function(a, b) {
 		var n = {};
@@ -92,11 +110,11 @@ var ƒ = _ƒ =  (function() {
 		} else {			
 			if( fns.length == 1 ) {				
 				f = function(x){
-					return [x, eval(fns[0], extend(env, {x:x}))];
+					return [x, evalparse(fns[0], extend(env, {x:x}))];
 				};
 			} else {				
 				f = function(x) {
-					var eqs = fns.map(function(ex){return eval(ex, extend(env, {x:x}));});
+					var eqs = fns.map(function(ex){return evalparse(ex, extend(env, {x:x}));});
 					return eqs;
 				};
 			}

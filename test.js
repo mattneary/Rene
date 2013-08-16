@@ -35,11 +35,12 @@ section("Arithmetic");
 assert_equal("Forming of a constant function.", ƒ("3")(2), [2, 3]);
 assert_equal("Forming of a basic arithmetic function.", ƒ("3+x")(2), [2, 5]);
 assert_equal("Forming of a composite arithmetic function.", ƒ("3+x*2")(2), [2, 7]);
-assert_equal("Forming of a first-order composition.", ƒ("3*x+2")(2), [2, 8]);
-assert_equal("Forming of a second-order composition.", ƒ("3*x+2*x")(2), [2, 10]);
+assert_equal("Forming of a first-order composition.", ƒ("(3*x)+2")(2), [2, 8]);
+assert_equal("Forming of a second-order composition.", ƒ("(3*x)+(2*x)")(2), [2, 10]);
 assert_equal("Forming of an exponential composition.", ƒ("2*3^x")(2), [2, 18]);
 
 section("Parenthetheses");
 assert_equal("Parenthetical constant.", ƒ("(3)")(2), [2, 3]);
 assert_equal("First-order parenthetical expression.", ƒ("(3*4)")(2), [2, 12]);
 assert_equal("Second-order parenthetical expression.", ƒ("(3+(2*6))")(2), [2, 15]);
+assert_equal("Third-order parenthetical expression.", ƒ("(3+((2+7)*6))")(2), [2, 57]);
