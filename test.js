@@ -44,3 +44,8 @@ assert_equal("Parenthetical constant.", ƒ("(3)")(2), [2, 3]);
 assert_equal("First-order parenthetical expression.", ƒ("(3*4)")(2), [2, 12]);
 assert_equal("Second-order parenthetical expression.", ƒ("(3+(2*6))")(2), [2, 15]);
 assert_equal("Third-order parenthetical expression.", ƒ("(3+((2+7)*6))")(2), [2, 57]);
+
+section("Functions");
+assert_equal("Trigonometric - sin", ƒ("0•x")(0), [0, 0]);
+assert_equal("Trigonometric - cos", ƒ("1•x")(0), [0, 1]);
+assert_equal("Monadic subtraction sign", ƒ("-x")(1), [1, -1]);

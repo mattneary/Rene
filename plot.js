@@ -3,7 +3,7 @@ var ƒ = _ƒ =  (function() {
 	    
 	// THE EVALUATOR
 	var number = "[0-9]",
-		operator = "[*+-\\/^]",
+		operator = "([*+-\\/\\^•])",
 		variable = "[a-zA-Z_]";
 	var identity = function(x){return x;};
 	var parseParen = function(str) {
@@ -34,15 +34,20 @@ var ƒ = _ƒ =  (function() {
 			}
 		}
 		if( rest ) {
-			var parsed = parse('_'+rest);						
+			var parsed = parse('_'+rest);									
 			parsed.splice(1, 1, parse(paren));		
 			return parsed;
 		} else {
 			return parse(paren);
 		}
 	};
+	var parseMonadicOp = function(str) {
+		var op = str[0],
+			rest = str.substr(1);
+		return [op, parse(rest)];
+	};
 	var parseOp = function(str) {
-		var first = str.split(/[*+-\/^]/)[0],
+		var first = str.split(new RegExp(operator))[0],
 			op = str.substr(first.length, 1),
 			rest = str.substr(first.length + 1);
 		return [op, parse(first), parse(rest)];
@@ -56,10 +61,11 @@ var ƒ = _ƒ =  (function() {
 	var or = function(a, b) {
 		return "("+a+"|"+b+")"
 	};
-	var parse = function(str) {		
+	var parse = function(str) {	
 		var exprs = [
 			[just(number), parseInt],
 			[leading(or(number, variable)+operator), parseOp],
+			[leading(operator), parseMonadicOp],
 			[/^[(]/, parseParen],
 			[/^/, identity]
 		];
@@ -79,7 +85,11 @@ var ƒ = _ƒ =  (function() {
 		} else if( typeof expr == 'number' ) {
 			return expr;
 		} else if( just(operator).test(expr[0]) ) {
-			return env[expr[0]](eval(expr[1], env), eval(expr[2], env));
+			if( expr.length == 2 ) {
+				return env.monadic[expr[0]](eval(expr[1], env));
+			} else {
+				return env.dyadic[expr[0]](eval(expr[1], env), eval(expr[2], env));
+			}
 		}
 	};
 	var evalparse = function(expr, env) {
@@ -97,9 +107,17 @@ var ƒ = _ƒ =  (function() {
 	};
 	var ƒ = function(fns, polar) {		
 		var env = {
-			"+": function(a,b){return a+b},
-			"*": function(a,b){return a*b},
-			"^": function(a,b){return Math.pow(a, b);}
+			dyadic: {
+				"+": function(a,b){return a+b},
+				"*": function(a,b){return a*b},
+				"^": function(a,b){return Math.pow(a, b);},
+				"•": function(x,y) { return [Math.sin, Math.cos, Math.tan][x](y); },
+				"-": function(a,b) { return a-b; },
+				"/": function(a,b) { return a/b; }
+			},
+			monadic: {
+				"-": function(a) { return -a; }
+			}
 		};
 		if( typeof fns == 'string' ) {
 			fns = [fns];
@@ -130,8 +148,8 @@ var ƒ = _ƒ =  (function() {
 		constructor: ƒ,
 		initPlane: function(el) {
 			var thiz = this;
-			ƒ("0").graph(el, 0, 1, '#666');
-			ƒ(["0","x"]).graph(el, 0, 1, '#666');		
+			ƒ("0").graph(el, 0, 1, '#333');
+			ƒ(["0","x"]).graph(el, 0, 1, '#333');		
 			return thiz;
 		},
 		y: function(x) {
@@ -160,7 +178,7 @@ var ƒ = _ƒ =  (function() {
 			!ax && ƒ.initPlane(elem);									
 			context.beginPath();				
 			// Plot style
-			context.strokeStyle = color;
+			context.strokeStyle = color || "#000";
 			context.lineWidth   = 3;
 
 			var sum = 0;

@@ -4,22 +4,21 @@ René
 Usage
 -----
 
-	var linear = ƒ("3x + 5");
-	linear.graph(document.getElementById('cvs'), null, 100);
+Functions are to be provided in a slightly modified form of APL expressions. Often 
+these expressions are indistinguishable from traditional arithmetic notation, but at 
+other times they may look strikingly different.
 
-Documentation
--------------
+```javascript
+// f(x) = (x^3)/2 + 5
+ƒ("(x^3)/2+5").graph(document.getElementById('cvs'), null, 100);
+```
 
-__ƒ (constructor)__:	Input a string and and receive a function of x.
-Example:
-
-	ƒ("3x^2")(2)
-
-__ƒ#graph__: Renders a function as a graph on a canvas plane.
-
-	ƒ("3x^2").graph(elem)
+```javascript
+// f(x) = 2cos(x)
+ƒ("2*1•x").graph(document.getElementById('cvs'), null, 100);
+```
 
 Roadmap
 -------
-- A Full-featured evaluator.
 - 3D
+- more complete library of APL functions
