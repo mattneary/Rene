@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Rene by mattneary</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Rene</h1>
+        <p class="header">An online, APL-driven grapher.</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/mattneary/Rene/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/mattneary/Rene/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/mattneary/Rene">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/mattneary">mattneary</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a name="ren%C3%A9" class="anchor" href="#ren%C3%A9"><span class="octicon octicon-link"></span></a>René</h1>
+
+<p>René is a graph renderer driven by APL, a language of greater uniformity and extensibility than traditional Mathematics notation.</p>
+
+<p><img src="http://f.cl.ly/items/2j0Z3l251R0b282L2R2W/curve.png" alt="Curve"></p>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>Functions are to be provided in a slightly modified form of APL expressions. Often 
+these expressions are indistinguishable from traditional arithmetic notation, but at 
+other times they may look strikingly different.</p>
+
+<div class="highlight"><pre><span class="c1">// f(x) = (x^3)/2 + 5</span>
+<span class="err">ƒ</span><span class="p">(</span><span class="s2">"(x^3)/2+5"</span><span class="p">).</span><span class="nx">graph</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'cvs'</span><span class="p">))</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="c1">// f(x) = 2cos(x)</span>
+<span class="err">ƒ</span><span class="p">(</span><span class="s2">"2*1•x"</span><span class="p">).</span><span class="nx">graph</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'cvs'</span><span class="p">))</span>
+</pre></div>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
